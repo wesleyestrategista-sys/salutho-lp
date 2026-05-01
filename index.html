@@ -569,13 +569,13 @@ footer strong { color: rgba(255,255,255,0.6); }
         <h3>Ver a plataforma funcionando</h3>
         <p>15 minutos. Sem compromisso. Nossa equipe mostra tudo ao vivo.</p>
       </div>
-      <form class="form-hero">
-        <div class="fg"><label>Nome completo</label><input type="text" placeholder="Dr. João Silva"></div>
-        <div class="fg"><label>E-mail</label><input type="email" placeholder="joao@clinica.com"></div>
-        <div class="fg"><label>WhatsApp</label><input type="tel" placeholder="(47) 99999-9999"></div>
+      <form class="form-hero" novalidate>
+        <div class="fg"><label>Nome completo</label><input type="text" placeholder="Dr. João Silva" required minlength="3"></div>
+        <div class="fg"><label>E-mail</label><input type="email" placeholder="joao@clinica.com" required></div>
+        <div class="fg"><label>WhatsApp</label><input type="tel" placeholder="(47) 99999-9999" id="tel-hero" required maxlength="15"></div>
         <div class="fg">
           <label>Área de atuação</label>
-          <select>
+          <select required>
             <option value="" disabled selected>Selecione sua área</option>
             <option>Medicina</option><option>Psicologia</option><option>Fisioterapia</option>
             <option>Nutrição</option><option>Odontologia</option><option>Outros</option>
@@ -583,7 +583,7 @@ footer strong { color: rgba(255,255,255,0.6); }
         </div>
         <div class="fg">
           <label>Tamanho da clínica</label>
-          <select>
+          <select required>
             <option value="" disabled selected>Selecione o porte</option>
             <option>Apenas eu</option><option>2 a 4 profissionais</option>
             <option>5 a 10 profissionais</option><option>11 a 15 profissionais</option>
@@ -855,8 +855,8 @@ footer strong { color: rgba(255,255,255,0.6); }
       </div>
       <div class="ct-row">
         <div class="ct-feature">Custos do sistema</div>
-        <div class="ct-val">Imprevisíveis conforme uso e estrutura</div>
-        <div class="ct-val hl">Previsíveis e transparentes</div>
+        <div class="ct-val"><span class="no">✗</span> Imprevisíveis conforme uso</div>
+        <div class="ct-val hl"><span class="ok">✓</span> Previsíveis e transparentes</div>
       </div>
       <div class="ct-row">
         <div class="ct-feature">Teleconsulta para o paciente</div>
@@ -1027,13 +1027,13 @@ footer strong { color: rgba(255,255,255,0.6); }
         <h3>Agendar demonstração</h3>
         <p>15 minutos ao vivo. Nossa equipe te mostra a plataforma funcionando.</p>
       </div>
-      <form class="form-closing">
-        <div class="fg"><label>Nome completo</label><input type="text" placeholder="Dr. João Silva"></div>
-        <div class="fg"><label>E-mail</label><input type="email" placeholder="joao@clinica.com"></div>
-        <div class="fg"><label>WhatsApp</label><input type="tel" placeholder="(47) 99999-9999"></div>
+      <form class="form-closing" novalidate>
+        <div class="fg"><label>Nome completo</label><input type="text" placeholder="Dr. João Silva" required minlength="3"></div>
+        <div class="fg"><label>E-mail</label><input type="email" placeholder="joao@clinica.com" required></div>
+        <div class="fg"><label>WhatsApp</label><input type="tel" placeholder="(47) 99999-9999" id="tel-closing" required maxlength="15"></div>
         <div class="fg">
           <label>Área de atuação</label>
-          <select>
+          <select required>
             <option value="" disabled selected>Selecione sua área</option>
             <option>Medicina</option><option>Psicologia</option><option>Fisioterapia</option>
             <option>Nutrição</option><option>Odontologia</option><option>Outros</option>
@@ -1041,14 +1041,14 @@ footer strong { color: rgba(255,255,255,0.6); }
         </div>
         <div class="fg">
           <label>Tamanho da clínica</label>
-          <select>
+          <select required>
             <option value="" disabled selected>Selecione o porte</option>
             <option>Apenas eu</option><option>2 a 4 profissionais</option>
             <option>5 a 10 profissionais</option><option>11 a 15 profissionais</option>
             <option>16 ou mais profissionais</option>
           </select>
         </div>
-        <button type="submit" class="btn-main">Quero estruturar minha clínica</button>
+        <button type="submit" class="btn-main">Agendar minha demonstração</button>
       </form>
       <p class="form-privacy">Dados protegidos. Sem spam. Sem compromisso.</p>
     </div>
@@ -1073,9 +1073,63 @@ footer strong { color: rgba(255,255,255,0.6); }
   }, { threshold: 0.08, rootMargin: '0px 0px -32px 0px' });
   document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
 
+  // Máscara de telefone
+  function phoneMask(input) {
+    input.addEventListener('input', function(e) {
+      let v = e.target.value.replace(/\D/g, '').slice(0, 11);
+      if (v.length <= 10) {
+        v = v.replace(/^(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3');
+      } else {
+        v = v.replace(/^(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3');
+      }
+      e.target.value = v;
+    });
+  }
+
+  const telHero = document.getElementById('tel-hero');
+  const telClosing = document.getElementById('tel-closing');
+  if (telHero) phoneMask(telHero);
+  if (telClosing) phoneMask(telClosing);
+
+  // Validação dos formulários
+  function validateForm(form) {
+    let valid = true;
+    form.querySelectorAll('[required]').forEach(field => {
+      field.style.borderColor = '';
+      if (!field.value || field.value === '') {
+        field.style.borderColor = '#e53e3e';
+        field.style.boxShadow = '0 0 0 3px rgba(229,62,62,0.15)';
+        valid = false;
+      } else {
+        field.style.borderColor = '';
+        field.style.boxShadow = '';
+      }
+      // Validar e-mail
+      if (field.type === 'email' && field.value) {
+        const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(field.value);
+        if (!emailOk) {
+          field.style.borderColor = '#e53e3e';
+          field.style.boxShadow = '0 0 0 3px rgba(229,62,62,0.15)';
+          valid = false;
+        }
+      }
+      // Validar telefone mínimo
+      if (field.type === 'tel' && field.value) {
+        const digits = field.value.replace(/\D/g, '');
+        if (digits.length < 10) {
+          field.style.borderColor = '#e53e3e';
+          field.style.boxShadow = '0 0 0 3px rgba(229,62,62,0.15)';
+          valid = false;
+        }
+      }
+    });
+    return valid;
+  }
+
   document.querySelectorAll('form').forEach(form => {
     form.addEventListener('submit', e => {
       e.preventDefault();
+      if (!validateForm(form)) return;
       const btn = form.querySelector('button[type="submit"]');
       const orig = btn.textContent;
       btn.textContent = '✓ Solicitação enviada! Entraremos em contato em breve.';
@@ -1086,6 +1140,10 @@ footer strong { color: rgba(255,255,255,0.6); }
         btn.style.background = '';
         btn.disabled = false;
         form.reset();
+        form.querySelectorAll('[required]').forEach(f => {
+          f.style.borderColor = '';
+          f.style.boxShadow = '';
+        });
       }, 5000);
     });
   });
