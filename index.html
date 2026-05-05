@@ -1147,6 +1147,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(dados)
       });
+
+      // Evento GTM
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({
+        'event': 'formulario_enviado',
+        'email': dados.email,
+        'nome': dados.nome
+      });
+
       return true;
     } catch (error) {
       console.error('Erro ao enviar dados:', error);
@@ -1164,7 +1173,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       btn.textContent = 'Enviando...';
       btn.disabled = true;
 
-      // Detectar qual formulário está sendo enviado
       const isHero = form.classList.contains('form-hero');
       const suffix = isHero ? '-hero' : '-closing';
 
@@ -1177,7 +1185,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         data:            new Date().toLocaleString('pt-BR')
       };
 
-      const enviado = await enviarParaPlanilha(dados);
+      await enviarParaPlanilha(dados);
 
       btn.textContent = '✓ Solicitação enviada! Entraremos em contato em breve.';
       btn.style.background = '#16a34a';
