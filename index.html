@@ -1163,7 +1163,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }
   }
 
-  document.querySelectorAll('form').forEach(form => {
+ document.querySelectorAll('form').forEach(form => {
     form.addEventListener('submit', async e => {
       e.preventDefault();
       if (!validateForm(form)) return;
@@ -1187,9 +1187,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
       await enviarParaPlanilha(dados);
 
+      // Dispara a conversão no Google Ads via GTM
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({
+        'event': 'formulario_enviado',
+        'form_location': isHero ? 'hero' : 'closing'
+      });
+
       btn.textContent = '✓ Solicitação enviada! Entraremos em contato em breve.';
       btn.style.background = '#16a34a';
-
       setTimeout(() => {
         btn.textContent = orig;
         btn.style.background = '';
