@@ -1136,65 +1136,66 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     return valid;
   }
 
-  const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxaonSATw1S94c42386T4THiggJ8xIHOsLhwZbLNn9W6Oa4WoTxMXDbH_DLKyPdl3kJxg/exec';
+ const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxaonSATw1S94c42386T4THiggJ8xIHOsLhwZbLNn9W6Oa4WoTxMXDbH_DLKyPdl3kJxg/exec';
 
-  async function enviarParaPlanilha(dados) {
-    try {
-      await fetch(GOOGLE_APPS_SCRIPT_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(dados)
-      });
-
-      // Evento GTM
-      window.dataLayer = window.dataLayer || [];
-      window.dataLayer.push({
-        'event': 'formulario_enviado',
-        'email': dados.email,
-        'nome': dados.nome
-      });
-
-      return true;
-    } catch (error) {
-      console.error('Erro ao enviar dados:', error);
-      return false;
-    }
+async function enviarParaPlanilha(dados) {
+  try {
+    await fetch(GOOGLE_APPS_SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(dados)
+    });
+    return true;
+  } catch (error) {
+    console.error('Erro ao enviar dados:', error);
+    return false;
   }
+}
 
- document.querySelectorAll('form').forEach(form => {
-    form.addEventListener('submit', async e => {
-      e.preventDefault();
-      if (!validateForm(form)) return;
+document.querySelectorAll('form').forEach(form => {
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    if (!validateForm(form)) return;
 
-      const btn = form.querySelector('button[type="submit"]');
-      const orig = btn.textContent;
-      btn.textContent = 'Enviando...';
-      btn.disabled = true;
+    const btn = form.querySelector('button[type="submit"]');
+    const orig = btn.textContent;
+    btn.textContent = 'Enviando...';
+    btn.disabled = true;
 
-      const isHero = form.classList.contains('form-hero');
-      const suffix = isHero ? '-hero' : '-closing';
+    const isHero = form.classList.contains('form-hero');
+    const suffix = isHero ? '-hero' : '-closing';
 
-      const dados = {
-        nome:            (form.querySelector('#nome' + suffix) || {}).value || '',
-        email:           (form.querySelector('#email' + suffix) || {}).value || '',
-        whatsapp:        (form.querySelector('#tel' + suffix) || {}).value || '',
-        area_atuacao:    (form.querySelector('#area' + suffix) || {}).value || '',
-        tamanho_clinica: (form.querySelector('#tamanho' + suffix) || {}).value || '',
-        data:            new Date().toLocaleString('pt-BR')
-      };
+    const dados = {
+      nome:            (form.querySelector('#nome' + suffix) || {}).value || '',
+      email:           (form.querySelector('#email' + suffix) || {}).value || '',
+      whatsapp:        (form.querySelector('#tel' + suffix) || {}).value || '',
+      area_atuacao:    (form.querySelector('#area' + suffix) || {}).value || '',
+      tamanho_clinica: (form.querySelector('#tamanho' + suffix) || {}).value || '',
+      data:            new Date().toLocaleString('pt-BR')
+    };
 
-      await enviarParaPlanilha(dados);
+    const sucesso = await enviarParaPlanilha(dados);
 
-      // Dispara a conversão no Google Ads via GTM
+    if (sucesso) {
+      // 🎯 Disparo ÚNICO da conversão
+      const telefoneNumerico = dados.whatsapp.replace(/\D/g, '');
+      
       window.dataLayer = window.dataLayer || [];
       window.dataLayer.push({
         'event': 'formulario_enviado',
-        'form_location': isHero ? 'hero' : 'closing'
+        'form_location': isHero ? 'hero' : 'closing',
+        'area_atuacao': dados.area_atuacao,
+        'tamanho_clinica': dados.tamanho_clinica,
+        'enhanced_conversion_data': {
+          'email': dados.email.toLowerCase().trim(),
+          'phone_number': telefoneNumerico ? '+55' + telefoneNumerico : ''
+        }
       });
 
       btn.textContent = '✓ Solicitação enviada! Entraremos em contato em breve.';
       btn.style.background = '#16a34a';
+      
       setTimeout(() => {
         btn.textContent = orig;
         btn.style.background = '';
@@ -1205,8 +1206,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           f.style.boxShadow = '';
         });
       }, 5000);
-    });
+    } else {
+      btn.textContent = 'Erro no envio. Tente novamente.';
+      btn.style.background = '#e53e3e';
+      setTimeout(() => {
+        btn.textContent = orig;
+        btn.style.background = '';
+        btn.disabled = false;
+      }, 3000);
+    }
   });
+});
 </script>
 </body>
 </html>
