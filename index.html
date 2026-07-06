@@ -1738,7 +1738,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <h3 id="modal-title">Fale com um consultor</h3>
       <p>Vamos entender o perfil da sua clínica e mostrar como o sistema funciona na prática.</p>
     </div>
-    <form onsubmit="handleSubmit(event)">
+    <form id="modal-form">
       <div class="form-field">
         <label>Nome completo</label>
         <input type="text" placeholder="Dra. Maria Silva" required />
@@ -1838,6 +1838,14 @@ document.addEventListener('DOMContentLoaded', function() {
       if (closeBtn) closeBtn.style.display = '';
       if (success) success.style.display = 'none';
     }, 300);
+  }
+
+  // Submit do formulário do modal
+  var modalForm = document.getElementById('modal-form');
+  if (modalForm) {
+    modalForm.addEventListener('submit', function(e) {
+      handleSubmit(e);
+    });
   }
 
   // Botões que abrem o modal
