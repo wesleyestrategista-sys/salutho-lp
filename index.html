@@ -1,6 +1,13 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-P3ZG86FG');</script>
+<!-- End Google Tag Manager -->
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Salutho · Prontuário para Ginecologia e Obstetrícia</title>
@@ -1062,6 +1069,10 @@
   </style>
 </head>
 <body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-P3ZG86FG"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
 
 <!-- NAV -->
 
@@ -1773,6 +1784,25 @@
     </form>
     <p class="form-note">Sem compromisso. Um consultor entra em contato em até 2 horas.</p>
   </div>
+
+  <!-- Tela de sucesso (oculta até envio) -->
+  <div class="modal-success" id="modal-success" style="display:none;">
+    <div style="text-align:center;padding:8px 0 24px;">
+      <div style="width:64px;height:64px;background:rgba(37,102,175,.1);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:1.8rem;">✅</div>
+      <h3 style="font-size:1.4rem;font-weight:800;color:var(--blue);margin-bottom:10px;">Mensagem enviada!</h3>
+      <p style="font-size:.95rem;color:var(--mid);line-height:1.6;margin-bottom:28px;">Em breve um consultor da Salutho entra em contato. Se preferir, solicite atendimento agora pelo WhatsApp.</p>
+      <a
+        href="https://wa.me/5547992886890?text=Ol%C3%A1%2C%20acabei%20de%20preencher%20o%20formul%C3%A1rio%20na%20landing%20page%20e%20gostaria%20de%20atendimento%20imediato."
+        target="_blank"
+        style="display:inline-flex;align-items:center;gap:10px;background:#25D366;color:#fff;padding:14px 28px;border-radius:50px;font-weight:800;font-size:1rem;text-decoration:none;box-shadow:0 4px 16px rgba(37,211,102,.35);transition:transform .15s;"
+        onmouseover="this.style.transform='translateY(-2px)'"
+        onmouseout="this.style.transform='translateY(0)'"
+      >
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        Solicitar atendimento imediato
+      </a>
+    </div>
+  </div>
 </div>
 
 
@@ -1795,6 +1825,19 @@ document.addEventListener('DOMContentLoaded', function() {
   function closeModal() {
     modal.classList.remove('open');
     document.body.style.overflow = '';
+    // Resetar estado do modal ao fechar
+    setTimeout(function() {
+      var form = modal.querySelector('form');
+      var header = modal.querySelector('.modal-header');
+      var note = modal.querySelector('.form-note');
+      var closeBtn = modal.querySelector('.modal-close');
+      var success = document.getElementById('modal-success');
+      if (form) { form.style.display = ''; form.reset(); }
+      if (header) header.style.display = '';
+      if (note) note.style.display = '';
+      if (closeBtn) closeBtn.style.display = '';
+      if (success) success.style.display = 'none';
+    }, 300);
   }
 
   // Botões que abrem o modal
@@ -1859,22 +1902,31 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 
-  // Form submit
+  // Form submit + evento GTM + tela de sucesso
   function handleSubmit(e) {
     e.preventDefault();
-    const btn = e.target.querySelector('button[type="submit"], .btn-submit');
-    if (btn) {
-      const original = btn.textContent;
-      btn.textContent = '✓ Enviado! Entraremos em contato em breve.';
-      btn.style.background = '#28a745';
-      setTimeout(() => {
-        btn.textContent = original;
-        btn.style.background = '';
-        e.target.reset();
-      }, 4000);
+
+    // Dispara evento de conversão no dataLayer (GTM capta e envia ao Google Ads)
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      event: 'generate_lead',
+      event_category: 'formulario',
+      event_label: 'demonstracao_go',
+      conversion_id: 'AW-18079201004'
+    });
+
+    // Oculta o conteúdo do form e exibe tela de sucesso
+    var modalBox = document.querySelector('.modal-box');
+    if (modalBox) {
+      // Esconder form e nota
+      modalBox.querySelector('form') && (modalBox.querySelector('form').style.display = 'none');
+      modalBox.querySelector('.modal-header') && (modalBox.querySelector('.modal-header').style.display = 'none');
+      modalBox.querySelector('.form-note') && (modalBox.querySelector('.form-note').style.display = 'none');
+      modalBox.querySelector('.modal-close') && (modalBox.querySelector('.modal-close').style.display = 'none');
+      // Exibir tela de sucesso
+      var successEl = document.getElementById('modal-success');
+      if (successEl) successEl.style.display = 'block';
     }
-    // Aqui integra com CRM / webhook da Salutho
-    // fetch('/api/lead', { method: 'POST', body: new FormData(e.target) })
   }
 
   // Scroll reveal leve
